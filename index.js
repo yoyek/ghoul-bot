@@ -1,8 +1,11 @@
-import { SERVER_PORT } from './app/config/index.js'
+import {
+  SERVER_PORT,
+  REMOVE_TEST_TWIT_AFTER
+} from './app/config/index.js'
 import express from 'express'
 import bodyParser from 'body-parser'
 import { Roarr as log } from 'roarr'
-import { sendGhoulTwit } from './app/lib/twitter.js'
+import { sendGhoulTwit, deleteGhoulTwit } from './app/lib/twitter.js'
 import { processSentinelEvents, saveSentinelJson, loadSentinelByTx } from './app/lib/sentinel.js'
 
 const server = express()
@@ -78,6 +81,16 @@ server.get("/txevent", async (req, res) => {
   // Post to twitter if specified in url query string
   if (doTwit) {
     twitInfo = await sendGhoulTwit(txInfo)
+
+    if (REMOVE_TEST_TWIT_AFTER) {
+      log(`Twit set for autodeleting after ${REMOVE_TEST_TWIT_AFTER} seconds`)
+
+      setTimeout(async () => {
+        log(`Auto deleting Twit #${twitInfo.twitResponse.id_str}`)
+
+        await deleteGhoulTwit(twitInfo.twitResponse.id_str)
+      }, REMOVE_TEST_TWIT_AFTER * 1000)
+    }
   }
 
   // Output debu info

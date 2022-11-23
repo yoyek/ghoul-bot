@@ -42,18 +42,34 @@ function sendGhoulTwit(txInfo) {
       log(err)
     }
 
+    log(`Posting to Twitter`)
     Twitter.post('statuses/update', params, (err, data, response) => {
       if (err) {
         log(err, 'Twitter statuses/update ERROR')
-        return resolve({twitPosted, twitBody, twitResponse: err})
+
+        return resolve({ twitPosted, twitBody, twitResponse: err })
       }
 
-      twitPosted = true
-      twitResponse = response
+      log(`Twitted: ${twitBody}`)
 
-      return resolve({twitPosted, twitBody, twitResponse})
+      twitPosted = true
+      twitResponse = data
+
+      return resolve({ twitPosted, twitBody, twitResponse })
     })
 
+  })
+}
+
+function deleteGhoulTwit(twitId) {
+  return new Promise(async (resolve, reject) => {
+    Twitter.post('statuses/destroy/:id', { id: twitId }, (err, data, response) => {
+      if (err) {
+        return reject(err)
+      }
+
+      resolve(data)
+    })
   })
 }
 
@@ -92,4 +108,4 @@ function fetchImageBase64(imageUrl) {
 }
 
 
-export { Twitter, sendGhoulTwit }
+export { Twitter, sendGhoulTwit, deleteGhoulTwit }
