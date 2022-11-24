@@ -68,14 +68,14 @@ server.get("/txevent", async (req, res) => {
   const events = loadSentinelByTx(tx)
 
   if (!events) {
-    res.send('TX event not found', 404)
+    return res.status(404).send('TX event not found')
   }
 
   // Process sentinel body to complete data for bot
   txInfo = await processSentinelEvents(events)
 
   if (!txInfo) {
-    res.send('Unable to process TX event', 404)
+    return res.status(404).send('Unable to process TX event')
   }
 
   // Post to twitter if specified in url query string
