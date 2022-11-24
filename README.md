@@ -5,6 +5,8 @@
 3. Make sure ./txlog folder is writable
 4. Run developement server
 ```
+yarn global add nodemon
+yarn global add roarr-cli
 yarn dev
 ```
 5. Run production server
