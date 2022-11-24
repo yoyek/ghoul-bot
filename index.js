@@ -82,13 +82,18 @@ server.get("/txevent", async (req, res) => {
   if (doTwit) {
     twitInfo = await sendGhoulTwit(txInfo)
 
-    if (REMOVE_TEST_TWIT_AFTER) {
+    if (REMOVE_TEST_TWIT_AFTER && twitInfo.twitResponse.id) {
+
       log(`Twit set for autodeleting after ${REMOVE_TEST_TWIT_AFTER} seconds`)
 
       setTimeout(async () => {
         log(`Auto deleting Twit #${twitInfo.twitResponse.id_str}`)
 
-        await deleteGhoulTwit(twitInfo.twitResponse.id_str)
+        try {
+          await deleteGhoulTwit(twitInfo.twitResponse.id_str)
+        } catch (err) {
+          log(`Cannot delete that twit: ${err.message}`)
+        }
       }, REMOVE_TEST_TWIT_AFTER * 1000)
     }
   }
